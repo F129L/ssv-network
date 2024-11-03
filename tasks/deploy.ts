@@ -126,7 +126,10 @@ subtask('deploy:mock-token', 'Deploys / fetch SSV Token').setAction(async ({}, h
   if (tokenAddress) return tokenAddress;
 
   // Local networks, deploy mock token
-  const ssvToken = await hre.viem.deployContract('SSVToken');
+  // const ssvToken = await hre.viem.deployContract('SSVToken');
+  const ssvTokenFactory = await ethers.getContractFactory('SSVTokenMock');
+  const ssvToken = await ssvTokenFactory.deploy();
+  await ssvToken.waitForDeployment();
 
   return ssvToken.address;
 });
@@ -149,7 +152,9 @@ subtask('deploy:impl', 'Deploys an implementation contract')
     await hre.run('compile');
 
     // Deploy implemetation contract
-    const contractImpl = await hre.viem.deployContract(contract);
+    const contractFactory = await ethers.getContractFactory(contract);
+    const contractImpl = await contractFactory.deploy();
+    await contractImpl.waitForDeployment();
     console.log(`${contract} implementation deployed to: ${contractImpl.address}`);
 
     return contractImpl.address;
